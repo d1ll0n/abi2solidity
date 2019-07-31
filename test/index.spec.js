@@ -22,7 +22,7 @@ function compileAndGetABI(soliditySource) {
       },
     },
   };
-  
+
   const compiled = JSON.parse(solc.compile(JSON.stringify(input)));
   return JSON.stringify(compiled.contracts['generated.sol'].GeneratedInterface.abi);
 }
