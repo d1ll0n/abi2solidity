@@ -8,10 +8,23 @@ function getTestFile(filename) {
 
 function compileAndGetABI(soliditySource) {
   const input = {
-    'generated.sol': soliditySource,
+    language: 'Solidity',
+    sources: {
+      'generated.sol': {
+        content: soliditySource,
+      },
+    },
+    settings: {
+      outputSelection: {
+        'generated.sol': {
+          GeneratedInterface: ['abi'],
+        },
+      },
+    },
   };
-  const compiled = solc.compile({ sources: input }, 1);
-  return compiled.contracts['generated.sol:GeneratedInterface'].interface;
+  
+  const compiled = JSON.parse(solc.compile(JSON.stringify(input)));
+  return JSON.stringify(compiled.contracts['generated.sol'].GeneratedInterface.abi);
 }
 
 function filterABI(stringAbi) {
@@ -21,7 +34,7 @@ function filterABI(stringAbi) {
 
 describe('Check that empty ABI return empty interface', () => {
   it('returns empty interface', () => {
-    expect(ABI2Solidity('[]')).toBe('interface GeneratedInterface {\n}\n');
+    expect(ABI2Solidity('[]')).toBe('pragma solidity ^0.5.10;\n\ninterface GeneratedInterface {\n}\n');
   });
 });
 
@@ -43,12 +56,11 @@ describe('ABI -> Solidity -> ABI - manually set', () => {
   // Test all ABI files
   const testParams = ['test/test1.abi', 'test/test2.abi'];
   for (let i = 0; i < testParams.length; i += 1) {
-    (function (testSpec) {
-      it('get Solidity interface then compiles it back to ABI and compare - ${testSpec}', () => {
-        const compiledAbi = compileAndGetABI(ABI2Solidity(getTestFile(`${testSpec}`)));
-        expect(filterABI(getTestFile(`${testSpec}`))).toEqual(filterABI(compiledAbi));
-      });
-    }(testParams[i]));
+    const testSpec = testParams[i];
+    it(`get Solidity interface then compiles it back to ABI and compare - ${testSpec}`, () => {
+      const compiledAbi = compileAndGetABI(ABI2Solidity(getTestFile(`${testSpec}`)));
+      expect(filterABI(getTestFile(`${testSpec}`))).toEqual(filterABI(compiledAbi));
+    });
   }
 });
 
@@ -56,11 +68,10 @@ describe('ABI -> Solidity -> ABI - All *.abi files', () => {
   // Test all ABI files
   const testParams = fs.readdirSync('test/abi/').filter(filename => filename.endsWith('.abi'));
   for (let i = 0; i < testParams.length; i += 1) {
-    (function (testSpec) {
-      it(`get Solidity interface then compiles it back to ABI and compare - ${testSpec}`, () => {
-        const compiledAbi = compileAndGetABI(ABI2Solidity(getTestFile(`test/abi/${testSpec}`)));
-        expect(filterABI(getTestFile(`test/abi/${testSpec}`))).toEqual(filterABI(compiledAbi));
-      });
-    }(testParams[i]));
+    const testSpec = testParams[i];
+    it(`get Solidity interface then compiles it back to ABI and compare - ${testSpec}`, () => {
+      const compiledAbi = compileAndGetABI(ABI2Solidity(getTestFile(`test/abi/${testSpec}`)));
+      expect(filterABI(getTestFile(`test/abi/${testSpec}`))).toEqual(filterABI(compiledAbi));
+    });
   }
 });

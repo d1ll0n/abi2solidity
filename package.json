@@ -24,7 +24,7 @@
     "eslint-plugin-react": "^7.11.1",
     "jest": "^19.0.2",
     "jest-cli": "^20.0.0",
-    "solc": "0.4.25"
+    "solc": "^0.5.10"
   },
   "engines": {
     "node": ">=6.0.0"
