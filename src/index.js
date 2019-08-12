@@ -9,7 +9,8 @@ function main() {
     .version(version)
     .option('-i, --input <file>', 'JSON ABI Input file', '')
     .option('-o, --output <file>', 'Solidity output file', '')
-    .option('-n, --name <name>', 'Generated Interface Name', 'GeneratedInterface')
+    .option('-n, --name <name>', 'Generated interface name', 'GeneratedInterface')
+    .option('-v, --version <compiler>', 'Compiler to use', '^0.5.10')
     .parse(process.argv);
 
   if (commander.input === '') {
@@ -21,7 +22,7 @@ function main() {
   //   console.log('Using stdout to write Solidity interface');
   // }
 
-  ABI2SolidityFiles(commander.input, commander.output, commander.name);
+  ABI2SolidityFiles(commander.input, commander.output, commander.name, commander.version);
 }
 
 main();
