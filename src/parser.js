@@ -71,10 +71,10 @@ export default class ABIParser {
     return out.join(' ');
   }
 
-  static parse(abi, versionString = '^0.5.10') {
+  static parse(abi, versionString = '^0.5.10', interfaceName = 'GeneratedInterface') {
     const parser = new ABIParser();
     const jsonABI = (typeof abi === 'string') ? JSON.parse(abi) : abi;
-    const HEADER = `pragma solidity ${versionString};\n\ninterface GeneratedInterface {\n`;
+    const HEADER = `pragma solidity ${versionString};\n\ninterface ${interfaceName} {\n`;
     const FOOTER = '}\n';
     let out = '';
     const methods = [];
